@@ -26,8 +26,14 @@ public class PlayerAttack : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if (colliderBox.Raycast(direction, rayResults, 0f, collisionLayers) != 0)
+        if (colliderBox.Raycast(direction, rayResults, 0f, collisionLayers) != 0) {
+            if (rayResults[0].collider.tag == "Enemy")
+                attack(rayResults[0].collider.gameObject);
             Destroy(gameObject);
+        }
         transform.position += direction;
+    }
+
+    private void attack(GameObject target) {
     }
 }

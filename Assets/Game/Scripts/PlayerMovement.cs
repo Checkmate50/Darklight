@@ -34,7 +34,6 @@ public class PlayerMovement : MonoBehaviour {
     // Movement stuff (no physics!)
     private Vector2 hitbox;
     private BoxCollider2D collisionBox;
-    private RaycastHit2D[] rayResults = new RaycastHit2D[1];
     private const int collisionLayers = (1 << 10) + (1 << 9); // Obstacles and enemies
     private Vector3 direction;
     private Vector3[] raycastOffsets;
