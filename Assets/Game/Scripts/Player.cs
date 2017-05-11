@@ -1,12 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerMovement : MonoBehaviour {
+public class Player : MovableObject {
 
     [SerializeField]
     private int maxHealth;
-    [SerializeField]
-    private float movementSpeed;
     [SerializeField]
     private int cooldown;
 
@@ -19,7 +17,7 @@ public class PlayerMovement : MonoBehaviour {
     [SerializeField]
     private string right;
     [SerializeField]
-    private PlayerAttack attackPrefab;
+    private PlayerAttack attack;
 
 
     private int health;
@@ -28,16 +26,21 @@ public class PlayerMovement : MonoBehaviour {
     private bool moveLeft;
     private bool moveRight;
     
-    private bool canFire;
-    private int fireCD;
+    private bool canAttack;
+    private int attackCD;
+
+    private GameController gameController;
 
     // Movement stuff (no physics!)
     private Vector2 hitbox;
-    private BoxCollider2D collisionBox;
     private const int collisionLayers = (1 << 10) + (1 << 9); // Obstacles and enemies
     private Vector3 direction;
     private Vector3[] raycastOffsets;
     private float movementOffset;
+
+    public void setGameController(GameController gameController) {
+        this.gameController = gameController;
+    }
 
     public int getHealth() {
         return health;
@@ -45,14 +48,15 @@ public class PlayerMovement : MonoBehaviour {
 
     public void takeDamage(int amount) {
         health -= amount;
+        if (health <= 0) {
+            gameController.gameOver();
+        }
     }
 
     // Use this for initialization
     void Start() {
         health = maxHealth;
-        movementOffset = Time.deltaTime * movementSpeed;
-        collisionBox = gameObject.GetComponent<BoxCollider2D>();
-        hitbox = collisionBox.size;
+        hitbox = gameObject.GetComponent<BoxCollider2D>().size;
         raycastOffsets = new Vector3[4];
         raycastOffsets[0] = new Vector3(0, hitbox.y, 0);
         raycastOffsets[1] = new Vector3(0, -hitbox.y, 0);
@@ -88,30 +92,31 @@ public class PlayerMovement : MonoBehaviour {
             moveRight = false;
     }
 
-    private void move() {
+    protected override void move() {
+        movementOffset = Time.deltaTime * moveSpeed;
         if (moveLeft || moveRight) {
             direction = Vector3.zero;
             if (moveLeft)
-                direction.x = -movementOffset;
+                direction.x = -1;
             if (moveRight)
-                direction.x = movementOffset;
+                direction.x = 1;
             if (Physics2D.Raycast(transform.position, direction.normalized, hitbox.x + movementOffset, collisionLayers).collider == null &&
                 Physics2D.Raycast(transform.position + raycastOffsets[0], direction.normalized, hitbox.x + movementOffset, collisionLayers).collider == null &&
                 Physics2D.Raycast(transform.position + raycastOffsets[1], direction.normalized, hitbox.x + movementOffset, collisionLayers).collider == null)
-                transform.position += direction;
+                transform.position += direction * movementOffset;
         }
 
         // Now move along the y-axis separately so collisions work out
         if (moveUp || moveDown) {
             direction = Vector3.zero;
             if (moveUp)
-                direction.y = movementOffset;
+                direction.y = 1;
             if (moveDown)
-                direction.y = -movementOffset;
-            if (Physics2D.Raycast(transform.position, direction.normalized, hitbox.y + movementOffset, collisionLayers).collider == null &&
-                Physics2D.Raycast(transform.position + raycastOffsets[2], direction.normalized, hitbox.y + movementOffset, collisionLayers).collider == null &&
-                Physics2D.Raycast(transform.position + raycastOffsets[3], direction.normalized, hitbox.y + movementOffset, collisionLayers).collider == null)
-                transform.position += direction;
+                direction.y = -1;
+            if (Physics2D.Raycast(transform.position, direction, hitbox.y + movementOffset, collisionLayers).collider == null &&
+                Physics2D.Raycast(transform.position + raycastOffsets[2], direction, hitbox.y + movementOffset, collisionLayers).collider == null &&
+                Physics2D.Raycast(transform.position + raycastOffsets[3], direction, hitbox.y + movementOffset, collisionLayers).collider == null)
+                transform.position += direction * movementOffset;
         }
     }
 
@@ -130,15 +135,15 @@ public class PlayerMovement : MonoBehaviour {
 
     private bool checkFire() {
         // Determines if we fire the weapon
-        if (fireCD > 0) {
-            fireCD--;
+        if (attackCD > 0) {
+            attackCD--;
             return false;
         }
         return Input.GetMouseButton(0);
     }
 
     private void fireWeapon() {
-        fireCD = cooldown;
-        Instantiate(attackPrefab, transform.position + transform.up * .5f, transform.rotation);
+        attackCD = cooldown;
+        Instantiate(attack, transform.position + transform.up * hitbox.y, transform.rotation);
     }
 }

@@ -1,34 +1,51 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class GameController : MonoBehaviour {
 
     [SerializeField]
-    private GameObject player;
+    private Player player;
     [SerializeField]
     private CameraController gameCamera;
     [SerializeField]
-    private GameObject[] enemies;
+    private Enemy[] enemies;
     [SerializeField]
     private GameObject[] walls;
 
     private Vector3 wallSize;
+    private Player playerInstance;
 
 	// Use this for initialization
 	void Start () {
         wallSize = walls[0].transform.lossyScale;
         startSetup();
         placeWalls();
+        placeEnemies();
 	}
 
     private void startSetup() {
-        GameObject p = Instantiate(player, Vector3.zero, Quaternion.identity);
+        playerInstance = Instantiate(player, Vector3.zero, Quaternion.identity);
+        playerInstance.setGameController(this);
         CameraController cam = Instantiate(gameCamera, new Vector3(0, 0, -10f), Quaternion.identity);
-        cam.setPlayer(p);
+        cam.setPlayer(playerInstance.gameObject);
     }
 
     private void placeWalls() {
         buildBoundary(Vector3.zero, 20, 15);
+    }
+
+    private void placeEnemies() {
+        Enemy e = Instantiate(enemies[0], new Vector3(-5, 5, 0), Quaternion.identity);
+        e.setPlayer(playerInstance);
+        e = Instantiate(enemies[0], new Vector3(-8, 3, 0), Quaternion.identity);
+        e.setPlayer(playerInstance);
+        e = Instantiate(enemies[0], new Vector3(6, 2, 0), Quaternion.identity);
+        e.setPlayer(playerInstance);
+        e = Instantiate(enemies[0], new Vector3(6, -4, 0), Quaternion.identity);
+        e.setPlayer(playerInstance);
+        e = Instantiate(enemies[0], new Vector3(-5, -6, 0), Quaternion.identity);
+        e.setPlayer(playerInstance);
     }
 
     private void buildBoundary(Vector3 center, int width, int height) {
@@ -61,5 +78,9 @@ public class GameController : MonoBehaviour {
     private void placeWall(Vector3 position) {
         int index = Random.Range(0, walls.Length);
         Instantiate(walls[index], position, Quaternion.identity);
+    }
+
+    public void gameOver() {
+        SceneManager.LoadScene(0);
     }
 }
