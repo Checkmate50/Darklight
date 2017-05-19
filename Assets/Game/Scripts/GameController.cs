@@ -84,4 +84,8 @@ public class GameController : MonoBehaviour
   public void gameOver() {
     SceneManager.LoadScene(0);
   }
+  public Player getPlayer()
+  {
+    return playerInstance;
+  }
 }
