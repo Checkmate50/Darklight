@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class LivesUI : MonoBehaviour
 {
   [SerializeField]
-  private GameController game;
+  private GameController gameController;
   private Text healthText;
 
   void Start()
@@ -17,7 +17,8 @@ public class LivesUI : MonoBehaviour
   // Update is called once per frame
   void Update()
   {
-    healthText.text = "Lives: " + game.getPlayer().getHealth();
-    Debug.Log(game.getPlayer().getHealth());
+    if (gameController == null)
+      return;
+    healthText.text = "Lives: " + gameController.getPlayer().getHealth();
   }
 }

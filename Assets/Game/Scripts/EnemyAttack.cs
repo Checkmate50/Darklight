@@ -29,8 +29,6 @@ public class EnemyAttack : MonoBehaviour
 
   // Update is called once per frame
   void Update() {
-    if (direction == null)
-      return;
     if (colliderBox.Raycast(direction, rayResults, 0f, collisionLayers) != 0) {
       if (rayResults[0].collider.tag == "Player")
         attack(rayResults[0].collider.gameObject.GetComponent<Player>());

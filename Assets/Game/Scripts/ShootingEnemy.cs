@@ -8,8 +8,10 @@ public class ShootingEnemy : Enemy
   [SerializeField]
   private float strafeDistance;
 
-  protected override void move() {
+  protected override bool move() {
     if (Vector3.Distance(transform.position, player.transform.position) > strafeDistance)
-      base.move();
+      return base.move();
+    else
+      return slow();
   }
 }

@@ -41,16 +41,18 @@ public class GameController : MonoBehaviour
   }
 
   private void placeEnemies() {
-    Enemy e = Instantiate(enemies[0], new Vector3(-5, 5, 0), Quaternion.identity);
+    placeEnemy(enemies, new Vector3(-5, 5, 0));
+    placeEnemy(enemies, new Vector3(-8, 3, 0));
+    placeEnemy(enemies, new Vector3(6, 2, 0));
+    placeEnemy(enemies, new Vector3(6, -4, 0));
+    placeEnemy(enemies, new Vector3(-5, -6, 0));
+  }
+
+  private void placeEnemy(Enemy[] enemyType, Vector3 position) {
+    int index = Random.Range(0, enemyType.Length);
+    Enemy e = Instantiate(enemyType[index], position, Quaternion.identity);
     e.setPlayer(playerInstance);
-    e = Instantiate(enemies[0], new Vector3(-8, 3, 0), Quaternion.identity);
-    e.setPlayer(playerInstance);
-    e = Instantiate(enemies[0], new Vector3(6, 2, 0), Quaternion.identity);
-    e.setPlayer(playerInstance);
-    e = Instantiate(enemies[0], new Vector3(6, -4, 0), Quaternion.identity);
-    e.setPlayer(playerInstance);
-    e = Instantiate(enemies[0], new Vector3(-5, -6, 0), Quaternion.identity);
-    e.setPlayer(playerInstance);
+    e.setGameController(this);
   }
 
   private void buildBoundary(Vector3 center, int width, int height) {

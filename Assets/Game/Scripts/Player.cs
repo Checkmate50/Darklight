@@ -30,18 +30,12 @@ public class Player : MovableObject
   private bool canAttack;
   private int attackCD;
 
-  private GameController gameController;
-
   // Movement stuff (no physics!)
   private Vector2 hitbox;
   private const int collisionLayers = (1 << 10) + (1 << 9); // Obstacles and enemies
   private Vector3 direction;
   private Vector3[] raycastOffsets;
   private float movementOffset;
-
-  public void setGameController(GameController gameController) {
-    this.gameController = gameController;
-  }
 
   public int getHealth() {
     return health;
@@ -67,6 +61,7 @@ public class Player : MovableObject
 
   // Update is called once per frame
   void Update() {
+    physicsUpdate();
     checkMovement();
     move();
     pointToMouse();
@@ -93,7 +88,10 @@ public class Player : MovableObject
       moveRight = false;
   }
 
-  protected override void move() {
+  protected override bool move() {
+    if (gameController.shouldUsePhysics())
+      return physicsMove();
+    bool toReturn = false;
     movementOffset = Time.deltaTime * moveSpeed;
     if (moveLeft || moveRight) {
       direction = Vector3.zero;
@@ -103,8 +101,10 @@ public class Player : MovableObject
         direction.x = 1;
       if (Physics2D.Raycast(transform.position, direction.normalized, hitbox.x + movementOffset, collisionLayers).collider == null &&
           Physics2D.Raycast(transform.position + raycastOffsets[0], direction.normalized, hitbox.x + movementOffset, collisionLayers).collider == null &&
-          Physics2D.Raycast(transform.position + raycastOffsets[1], direction.normalized, hitbox.x + movementOffset, collisionLayers).collider == null)
+          Physics2D.Raycast(transform.position + raycastOffsets[1], direction.normalized, hitbox.x + movementOffset, collisionLayers).collider == null) {
         transform.position += direction * movementOffset;
+        toReturn = true;
+      }
     }
 
     // Now move along the y-axis separately so collisions work out
@@ -116,9 +116,27 @@ public class Player : MovableObject
         direction.y = -1;
       if (Physics2D.Raycast(transform.position, direction, hitbox.y + movementOffset, collisionLayers).collider == null &&
           Physics2D.Raycast(transform.position + raycastOffsets[2], direction, hitbox.y + movementOffset, collisionLayers).collider == null &&
-          Physics2D.Raycast(transform.position + raycastOffsets[3], direction, hitbox.y + movementOffset, collisionLayers).collider == null)
+          Physics2D.Raycast(transform.position + raycastOffsets[3], direction, hitbox.y + movementOffset, collisionLayers).collider == null) {
         transform.position += direction * movementOffset;
+        toReturn = true;
+      }
     }
+    return toReturn;
+  }
+
+  private bool physicsMove() {
+    Vector2 v = Vector2.zero;
+    movementOffset = moveSpeed;
+    if (moveUp)
+      v.y += movementOffset;
+    if (moveDown)
+      v.y -= movementOffset;
+    if (moveLeft)
+      v.x -= movementOffset;
+    if (moveRight)
+      v.x += movementOffset;
+    rigidBody.velocity = v;
+    return true;
   }
 
   private void pointToMouse() {
