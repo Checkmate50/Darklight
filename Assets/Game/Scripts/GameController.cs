@@ -13,6 +13,8 @@ public class GameController : MonoBehaviour
   private Enemy[] enemies;
   [SerializeField]
   private GameObject[] walls;
+  [SerializeField]
+  private bool usePhysics;
 
   private Vector3 wallSize;
   private Player playerInstance;
@@ -34,6 +36,8 @@ public class GameController : MonoBehaviour
 
   private void placeWalls() {
     buildBoundary(Vector3.zero, 20, 15);
+    placeWall(new Vector3(0, 4, 0));
+    placeWall(new Vector3(0, -4, 0));
   }
 
   private void placeEnemies() {
@@ -83,5 +87,9 @@ public class GameController : MonoBehaviour
 
   public void gameOver() {
     SceneManager.LoadScene(0);
+  }
+
+  public bool shouldUsePhysics() {
+    return usePhysics;
   }
 }
