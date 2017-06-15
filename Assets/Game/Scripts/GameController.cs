@@ -92,4 +92,9 @@ public class GameController : MonoBehaviour
   public bool shouldUsePhysics() {
     return usePhysics;
   }
+
+  public Player getPlayer()
+  {
+    return playerInstance;
+  }
 }
