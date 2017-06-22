@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class Player : MovableObject
 {
@@ -60,8 +59,8 @@ public class Player : MovableObject
   }
 
   // Update is called once per frame
-  void Update() {
-    physicsUpdate();
+  protected override void Update() {
+    base.Update();
     checkMovement();
     move();
     pointToMouse();
@@ -70,6 +69,7 @@ public class Player : MovableObject
   }
 
   private void checkMovement() {
+    // Stupid, but consistent way to check directional keys
     if (Input.GetKeyDown(up))
       moveUp = true;
     else if (Input.GetKeyUp(up))
@@ -89,7 +89,7 @@ public class Player : MovableObject
   }
 
   protected override bool move() {
-    if (gameController.shouldUsePhysics())
+    if (!rigidBody.isKinematic)
       return physicsMove();
     bool toReturn = false;
     movementOffset = Time.deltaTime * moveSpeed;
@@ -163,6 +163,7 @@ public class Player : MovableObject
 
   private void fireWeapon() {
     attackCD = cooldown;
-    Instantiate(attack, transform.position + transform.up * hitbox.y, transform.rotation);
+    Projectile p = Instantiate(attack, transform.position + transform.up * hitbox.y, transform.rotation);
+    p.setTarget();
   }
 }

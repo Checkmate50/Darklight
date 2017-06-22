@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections;
 
 public class GameController : MonoBehaviour
 {
@@ -13,8 +12,6 @@ public class GameController : MonoBehaviour
   private Enemy[] enemies;
   [SerializeField]
   private GameObject[] walls;
-  [SerializeField]
-  private bool usePhysics;
 
   private Vector3 wallSize;
   private Player playerInstance;
@@ -89,10 +86,6 @@ public class GameController : MonoBehaviour
 
   public void gameOver() {
     SceneManager.LoadScene(0);
-  }
-
-  public bool shouldUsePhysics() {
-    return usePhysics;
   }
 
   public Player getPlayer()

@@ -1,43 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class EnemyAttack : MonoBehaviour
+public class EnemyAttack : Projectile
 {
-
-  [SerializeField]
-  private int damage;
-  [SerializeField]
-  private float movementSpeed;
-  [SerializeField]
-  private float spread;
-
-  private Vector3 direction;
-  private Collider2D colliderBox;
-  private RaycastHit2D[] rayResults = new RaycastHit2D[1];
-  private const int collisionLayers = (1 << 10) + (1 << 8); // Obstacles and player
-
-  // Use this for initialization
-  public void setTarget(Vector3 location) {
-    transform.up = location - transform.position;
-    colliderBox = gameObject.GetComponent<BoxCollider2D>();
-    direction = transform.up;
-    direction.x += spread * Random.Range(-1, 1);
-    direction.y += spread * Random.Range(-1, 1);
-    direction = direction.normalized * movementSpeed;
+  protected override void Start() {
+    base.Start();
+    collisionLayers = (1 << 10) + (1 << 8); // Obstacles and player
   }
 
-  // Update is called once per frame
-  void Update() {
-    if (colliderBox.Raycast(direction, rayResults, 0f, collisionLayers) != 0) {
-      if (rayResults[0].collider.tag == "Player")
-        attack(rayResults[0].collider.gameObject.GetComponent<Player>());
-      Destroy(gameObject);
-    }
-    transform.position += direction * Time.deltaTime;
-  }
-
-  private void attack(Player player) {
-    player.takeDamage(damage);
+  protected override void hit(RaycastHit2D target) {
+    if (target.collider.tag == "Player")
+      target.collider.gameObject.GetComponent<Player>().takeDamage(damage);
   }
 }
