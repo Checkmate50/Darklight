@@ -30,7 +30,6 @@ public class Enemy : MovableObject
     hitbox = gameObject.GetComponent<BoxCollider2D>().size;
   }
 
-  // Update is called once per frame
   protected override void Update() {
     base.Update();
     if (player == null)
@@ -41,10 +40,16 @@ public class Enemy : MovableObject
       else
         return;
     }
-    transform.rotation = Quaternion.identity;
-    move();
     if (canAttack())
       useAttack();
+  }
+
+  // Update is called once per frame
+  protected override void FixedUpdate() {
+    base.FixedUpdate();
+    if (player == null || !activated)
+      return;
+    move();
   }
 
   public void setPlayer(Player player) {
@@ -70,7 +75,7 @@ public class Enemy : MovableObject
 
   protected void useAttack(Vector3 target) {
     attackCD = cooldown;
-    EnemyAttack a = Instantiate(attack, transform.position - (transform.position - target).normalized * hitbox.y, Quaternion.identity);
+    EnemyAttack a = Instantiate(attack, transform.position - (transform.position - target).normalized * hitbox.y / 2, Quaternion.identity);
     a.setTarget(target);
   }
 

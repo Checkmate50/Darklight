@@ -10,14 +10,16 @@ public abstract class MovableObject : MonoBehaviour
   protected GameController gameController;
   protected Rigidbody2D rigidBody;
 
-  protected virtual void Update() {
-    if (gameController == null)
-      return;
+  protected virtual void FixedUpdate() {
     float mag = rigidBody.velocity.magnitude;
     if (mag < .01) // Avoid weird movement crap
       rigidBody.velocity = Vector2.zero;
     if (rigidBody.velocity.magnitude > moveSpeed)
       rigidBody.velocity = rigidBody.velocity.normalized * moveSpeed;
+  }
+
+  protected virtual void Update() {
+    return;
   }
 
   public void setGameController(GameController gameController) {
@@ -34,8 +36,7 @@ public abstract class MovableObject : MonoBehaviour
   protected bool slow() {
     if (rigidBody.velocity.magnitude < .01)
       return false;
-    float factor = Mathf.Min(rigidBody.velocity.magnitude, acceleration);
-    rigidBody.AddForce((-rigidBody.velocity.normalized) * factor);
+    rigidBody.AddForce((-rigidBody.velocity.normalized) * acceleration);
     return true;
   }
 }

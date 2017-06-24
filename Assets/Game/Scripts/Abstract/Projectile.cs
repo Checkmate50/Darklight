@@ -43,7 +43,10 @@ public abstract class Projectile : MonoBehaviour {
   // Use this for initialization
   public void setTarget(Vector3 location, bool inDirection) {
     // If inDirection is true, shoot in direction rather than towards location
-    transform.up = location - transform.position;
+    if (inDirection)
+      transform.up = location;
+    else
+      transform.up = location - transform.position;
     colliderBox = gameObject.GetComponent<BoxCollider2D>();
     direction = transform.up;
     direction.x += spread * Random.Range(-1, 1);

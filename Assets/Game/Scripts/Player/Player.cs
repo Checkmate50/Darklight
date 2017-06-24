@@ -62,10 +62,15 @@ public class Player : MovableObject
   protected override void Update() {
     base.Update();
     checkMovement();
-    move();
-    pointToMouse();
     if (checkFire())
       fireWeapon();
+  }
+
+  // Update but with physics
+  protected override void FixedUpdate() {
+    base.FixedUpdate();
+    move();
+    pointToMouse();
   }
 
   private void checkMovement() {
