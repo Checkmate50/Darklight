@@ -54,5 +54,9 @@ public abstract class Projectile : MonoBehaviour {
     direction = direction.normalized * moveSpeed;
   }
 
+  public void setDamage(int damage) {
+    this.damage = damage;
+  }
+
   protected abstract void hit(RaycastHit2D target);
 }

@@ -16,8 +16,6 @@ public class Player : MovableObject
   private string left;
   [SerializeField]
   private string right;
-  [SerializeField]
-  private PlayerAttack attack;
 
 
   private int health;
@@ -62,8 +60,6 @@ public class Player : MovableObject
   protected override void Update() {
     base.Update();
     checkMovement();
-    if (checkFire())
-      fireWeapon();
   }
 
   // Update but with physics
@@ -155,20 +151,5 @@ public class Player : MovableObject
     mousePos.y = mousePos.y - objectPos.y;
     angle = Mathf.Atan2(mousePos.y, mousePos.x) * Mathf.Rad2Deg;
     transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle + 270));
-  }
-
-  private bool checkFire() {
-    // Determines if we fire the weapon
-    if (attackCD > 0) {
-      attackCD--;
-      return false;
-    }
-    return Input.GetMouseButton(0);
-  }
-
-  private void fireWeapon() {
-    attackCD = cooldown;
-    Projectile p = Instantiate(attack, transform.position + transform.up * hitbox.y, transform.rotation);
-    p.setTarget();
   }
 }
